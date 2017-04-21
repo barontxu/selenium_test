@@ -5,6 +5,7 @@ include operations of safari
 import hashlib
 import os
 import time
+from datetime import datetime
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 from base import BrowserBase
@@ -16,6 +17,8 @@ sys.setdefaultencoding('UTF8')
 PROXY = [
 ]
 
+class TimeoutError(Exception):
+        pass
 
 class BaseOp(BrowserBase):
     '''include base function'''
@@ -35,7 +38,7 @@ open_url = OpenUrl
 class Wait(BaseOp):
     '''wait for several seconds in browser '''
     def __init__(self, browser, times):
-        time.sleep(times)
+        wait_for(times)
         # browser.driver.implicitly_wait(times)
 
 wait = Wait
@@ -47,15 +50,31 @@ class WaitUntilLoaded(BaseOp):
         driver = browser.driver
         last_html = driver.page_source
         op(browser, *arg)
+        tick = datetime.now()
         while True:
             if driver.page_source != last_html and \
                driver.execute_script('return document.readyState;')=='complete':
                 break
             else:
-                time.sleep(time_out)
+                time.sleep(0.2)
+            if datetime.now() - tick > time_out:
+                raise TimeoutError('Timeout Boom!')
         print "end"
 
 wait_until_loaded = WaitUntilLoaded
+
+
+class WaitForSthShow(BaseOp):
+    '''until loaded'''
+    def __init__(self, browser, time_out, elem_exp):
+        tick = datetime.now()
+        while not there_is(browser, elem_exp):
+            print there_is(browser, elem_exp)
+            time.sleep(0.2)
+            if (datetime.now() - tick).total_seconds() > time_out:
+                raise TimeoutError('Timeout Boom!')
+
+wait_for_sth_show = WaitForSthShow
 
 
 class FillForm(BaseOp):

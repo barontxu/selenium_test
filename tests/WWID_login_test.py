@@ -8,6 +8,7 @@ sys.path.append('../')
 
 from test_base import TestBase
 from browser.operators import *
+from browser.element import *
 from browser.browser import BrowserFirefox
 
 url_origin = 'https://passport.mobvoi.com/pages/login?from=yuyiguo'
@@ -33,27 +34,28 @@ class WWIDLoginTest(TestBase):
         brs = self.browser
         open_url(brs, url_origin)
         fill_form(brs, id_exp, login_id)
-        time.sleep(2)
+        # time.sleep(2)
         fill_form(brs, password_exp, login_passport)
-        time.sleep(1)
-        click(brs, login_button_exp)
-        time.sleep(10)
-        #WaitUntilLoaded(brs, 20, click, login_button_exp)
-#        try:
-#            open_url(brs, url_origin)
-#            fill_form(brs, id_exp, login_id)
-#            fill_form(brs, password_exp, login_passport)
-#            WaitUntilLoaded(brs, 20, click, login_button_exp)
-#            return True
-#        except:
-#            print "failed in login"
-#            return False
+        click(brs, '''<div class="btn login-btn _login-btn">登录</div>''')
+        # time.sleep(10)
+        # from IPython import embed;embed();
+        wait_for_sth_show(brs, 20, '''<img src="/img/logo.png" class="logo">''')
+        return True
+        # try:
+        #     open_url(brs, url_origin)
+        #     fill_form(brs, id_exp, login_id)
+        #     # time.sleep(2)
+        #     fill_form(brs, password_exp, login_passport)
+        #     wait_for_sth_show(brs, 20, '''<h2>个人中心</h2>''')
+        #     return True
+        # except:
+        #     print "failed in login"
+        #     return False
 
     def checkLoginToken(self):
         brs = self.browser
         for domain in domains:
             open_url(brs, user_info_url.format(domain=domain))
-            time.sleep(4)
             if brs.driver.name == 'ww_token':
                 return False
         return True
@@ -61,10 +63,10 @@ class WWIDLoginTest(TestBase):
     def checkLogoutToken(self):
         brs = self.browser
         open_url(brs, logout_url)
-        time.sleep(10)
+        # time.sleep(10)
         for domain in domains:
             open_url(brs, user_info_url.format(domain=domain))
-            time.sleep(4)
+            # time.sleep(4)
             if brs.driver.name == 'ww_token':
                 return False
         return True

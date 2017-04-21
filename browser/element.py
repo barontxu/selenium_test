@@ -138,6 +138,7 @@ def there_is(browser, expression):
             else:
                 return False
     except:
+        print "exception"
         return False
 
 
